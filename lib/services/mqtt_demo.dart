@@ -11,8 +11,9 @@ int port = 35489;
 String clientId = 'flutter_client1263';
 String username = 'bdihabyp';
 String password = 'zFv3EzhKhjme';
-String pingTopic = '/PING/AVA-B81FB608';
-String pongTopic = '/PONG/AVA-B81FB608';
+final deviceID = 'AVA-B81FB608'; // Replace with the actual device ID
+final String pingTopic = '/PING/$deviceID';
+final responseTopic = '/RESPONSE/$deviceID';
 
 final client = MqttServerClient.withPort('wss://$broker', clientId, port);
 
@@ -51,38 +52,14 @@ Future<int> connect() async {
   if (client.connectionStatus!.state == MqttConnectionState.connected) {
     log('Client connected');
     subscribeToTopics();
-    log('subscribe...');
+    log('PING....');
+    sendPing();
     return 0;
   } else {
     log('Client connection failed - disconnecting, status is ${client.connectionStatus}');
     client.disconnect();
     return 1;
   }
-
-  // try {
-  //   await client.connect();
-  //   if (client.connectionStatus!.state == MqttConnectionState.connected) {
-  //     log('MQTT client connected successfully');
-  //     subscribeToTopics();
-  //     return 0;
-  //     // client.subscribe('/PONG/AVA-B81FB608', MqttQos.atMostOnce);
-  //   } else {
-  //     log('MQTT client connection failed - disconnecting, state: ${client.connectionStatus!.state}');
-  //     log('MQTT client connection status code: ${client.connectionStatus!.returnCode}');
-  //     client.disconnect();
-  //     return 1;
-  //   }
-  // } on NoConnectionException catch (e) {
-  //   log('MQTT NoConnectionException: $e');
-  //   client.disconnect();
-  // } on SocketException catch (e) {
-  //   log('MQTT SocketException: $e');
-  //   client.disconnect();
-  // } catch (e) {
-  //   log('MQTT general exception: $e');
-  //   client.disconnect();
-  // }
-  // return 1;
 
   // client.logging(on: true);
   // client.keepAlivePeriod = 60;
@@ -127,10 +104,6 @@ Future<int> connect() async {
 }
 
 void subscribeToTopics() {
-  final deviceID = 'AVA-B81FB608'; // Replace with the actual device ID
-  final pingTopic = '/PING/$deviceID';
-  final responseTopic = '/RESPONSE/$deviceID';
-
   // Define the subscription status callback
   client.onSubscribed = (String topic) {
     log('Subscribed to $topic');
@@ -239,4 +212,21 @@ Future<void> connectToMqtt() async {
     log('Client connection failed - disconnecting, status is ${client.connectionStatus}');
     client.disconnect();
   }
+}
+
+void sendPing() {
+  final builder = MqttClientPayloadBuilder();
+  builder.addString('ping');
+  client.publishMessage(pingTopic, MqttQos.atMostOnce, builder.payload!);
+  log('Ping message sent to topic $pingTopic');
+
+  client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+    final MqttPublishMessage message = c![0].payload as MqttPublishMessage;
+    final String payload =
+        MqttPublishPayload.bytesToStringAsString(message.payload.message);
+
+    if (c[0].topic == responseTopic) {
+      log('Pong response received from topic $responseTopic: $payload');
+    }
+  });
 }
