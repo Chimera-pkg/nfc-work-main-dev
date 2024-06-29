@@ -37,8 +37,8 @@ class SuccessController extends GetxController {
   Future<void> checkMqttConnection() async {
     isLoading.value = true;
     try {
-      final connectionStatus = await main();
-      if (connectionStatus == 1) {
+      final connectionStatus = await connect();
+      if (connectionStatus == 0) {
         mqttConnectionStatus.value = true;
       }
       isLoading.value = false;
