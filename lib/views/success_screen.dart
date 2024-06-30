@@ -51,6 +51,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
               TextButton(
                 child: const Text('Ok'),
                 onPressed: () {
+                  Get.back();
                   // Navigator.of(context).pop();
                 },
               ),

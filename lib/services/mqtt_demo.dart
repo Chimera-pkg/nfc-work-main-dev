@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -11,9 +13,9 @@ int port = 35489;
 String clientId = 'flutter_client1263';
 String username = 'bdihabyp';
 String password = 'zFv3EzhKhjme';
-final deviceID = 'AVA-B81FB608'; // Replace with the actual device ID
-final String pingTopic = '/PING/$deviceID';
-final responseTopic = '/RESPONSE/$deviceID';
+const deviceID = 'AVA-B81FB608'; // Replace with the actual device ID
+const String pingTopic = '/PING/$deviceID';
+const responseTopic = '/RESPONSE/$deviceID';
 
 final client = MqttServerClient.withPort('wss://$broker', clientId, port);
 
@@ -162,6 +164,34 @@ void subscribeToTopics() {
 
 void onDisconnected() {
   log('OnDisconnected client callback - Client disconnection');
+
+  if (Get.isDialogOpen == true) {
+    Get.back();
+  }
+
+  Get.dialog(
+    AlertDialog(
+      title: const Text('FAILED'),
+      content: const SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            Text('client connection failed'),
+            Text('disconnecting'),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Ok'),
+          onPressed: () {
+            Get.back();
+          },
+        ),
+      ],
+    ),
+    barrierDismissible: false,
+  );
+
   if (client.connectionStatus!.disconnectionOrigin ==
       MqttDisconnectionOrigin.solicited) {
     log('OnDisconnected callback is solicited, this is correct');
