@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:demo_nfc/controller/controller_success.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -164,33 +165,14 @@ void subscribeToTopics() {
 
 void onDisconnected() {
   log('OnDisconnected client callback - Client disconnection');
+  Rx<bool> loadingValue = Get.find<SuccessController>().isLoading;
 
-  if (Get.isDialogOpen == true) {
-    Get.back();
+  if (loadingValue.isTrue) {
+    if (Get.isDialogOpen == false) {
+      log('test dialog');
+      // disconnectDialog();
+    }
   }
-
-  Get.dialog(
-    AlertDialog(
-      title: const Text('FAILED'),
-      content: const SingleChildScrollView(
-        child: ListBody(
-          children: <Widget>[
-            Text('client connection failed'),
-            Text('disconnecting'),
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: const Text('Ok'),
-          onPressed: () {
-            Get.back();
-          },
-        ),
-      ],
-    ),
-    barrierDismissible: false,
-  );
 
   if (client.connectionStatus!.disconnectionOrigin ==
       MqttDisconnectionOrigin.solicited) {
@@ -259,4 +241,29 @@ void sendPing() {
       log('Pong response received from topic $responseTopic: $payload');
     }
   });
+}
+
+void disconnectDialog() {
+  Get.dialog(
+    AlertDialog(
+      title: const Text('FAILED'),
+      content: const SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            Text('client connection failed'),
+            Text('disconnecting'),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Ok'),
+          onPressed: () {
+            Get.back();
+          },
+        ),
+      ],
+    ),
+    barrierDismissible: false,
+  );
 }

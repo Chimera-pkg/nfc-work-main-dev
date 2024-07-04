@@ -37,6 +37,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
       } else {
         if (!controller.mqttConnectionStatus.value ||
             !controller.internetConnectionStatus.value) {
+          Future.delayed(Duration(seconds: 3));
           return AlertDialog(
             title: const Text('FAILED'),
             content: const SingleChildScrollView(
