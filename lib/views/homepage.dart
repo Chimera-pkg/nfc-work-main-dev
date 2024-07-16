@@ -64,6 +64,7 @@ class HomePage extends StatelessWidget {
                     title: "Machiato",
                     subtitle: "SAR 30.00",
                     onTap: () {
+                      controller.checkMqttConnection();
                       Navigator.push(
                         context,
                         MaterialPageRoute(

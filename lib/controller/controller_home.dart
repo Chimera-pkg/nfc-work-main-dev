@@ -13,10 +13,10 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    checkMqttConnection();
-    Timer.periodic(const Duration(seconds: 10), (_) {
-      checkMqttConnection();
-    });
+    // checkMqttConnection();
+    // Timer.periodic(const Duration(seconds: 10), (_) {
+    //   checkMqttConnection();
+    // });
 
     checkConnection();
     Connectivity().onConnectivityChanged.listen((result) {
