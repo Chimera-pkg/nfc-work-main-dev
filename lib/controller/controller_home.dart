@@ -36,6 +36,7 @@ class HomeController extends GetxController {
   }
 
   Future<void> checkMqttConnection() async {
+    mqttConnectionStatus.value = false;
     isLoading.value = true;
     try {
       final connectionStatus = await connect();
