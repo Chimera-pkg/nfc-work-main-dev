@@ -54,14 +54,14 @@ Future<int> connect() async {
 
   if (client.connectionStatus!.state == MqttConnectionState.connected) {
     log('Client connected');
-    subscribeToTopics();
+    await subscribeToTopics();
     log('PING....');
-    sendPing();
-    return 0;
+    await sendPing();
+    return 1;
   } else {
     log('Client connection failed - disconnecting, status is ${client.connectionStatus}');
     client.disconnect();
-    return 1;
+    return 0;
   }
 
   // client.logging(on: true);
@@ -106,7 +106,7 @@ Future<int> connect() async {
   // }
 }
 
-void subscribeToTopics() {
+Future<void> subscribeToTopics() async {
   // Define the subscription status callback
   client.onSubscribed = (String topic) {
     log('Subscribed to $topic');
@@ -226,7 +226,7 @@ Future<void> connectToMqtt() async {
   }
 }
 
-void sendPing() {
+Future<void> sendPing() async {
   final builder = MqttClientPayloadBuilder();
   builder.addString('ping');
   client.publishMessage(pingTopic, MqttQos.atMostOnce, builder.payload!);

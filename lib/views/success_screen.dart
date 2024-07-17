@@ -9,8 +9,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:demo_nfc/controller/controller_success.dart';
 
-final controller = Get.put(SuccessController());
-
 class WebViewScreen extends StatefulWidget {
   const WebViewScreen({super.key});
 
@@ -19,10 +17,7 @@ class WebViewScreen extends StatefulWidget {
 }
 
 class _WebViewScreenState extends State<WebViewScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  final controller = Get.put(SuccessController());
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +30,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           ),
         );
       } else {
-        if (!controller.mqttConnectionStatus.value ||
-            !controller.internetConnectionStatus.value) {
-          Future.delayed(Duration(seconds: 3));
+        if (controller.mqttConnectionStatus.value == false) {
           return AlertDialog(
             title: const Text('FAILED'),
             content: const SingleChildScrollView(

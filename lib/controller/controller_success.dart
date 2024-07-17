@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:demo_nfc/services/mqtt_demo.dart';
 import 'package:get/get.dart';
 
@@ -10,42 +8,19 @@ class SuccessController extends GetxController {
   final internetConnectionStatus = false.obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    checkMqttConnection();
-    Timer.periodic(const Duration(seconds: 10000), (_) {
-      checkMqttConnection();
-    });
-
-    checkConnection();
-    Connectivity().onConnectivityChanged.listen((result) {
-      checkConnection();
-    });
-  }
-
-  void checkConnection() async {
-    List<ConnectivityResult> connectivityResult =
-        await (Connectivity().checkConnectivity());
-    if (connectivityResult.contains(ConnectivityResult.mobile) ||
-        connectivityResult.contains(ConnectivityResult.wifi)) {
-      internetConnectionStatus.value = true;
-    } else {
-      internetConnectionStatus.value = false;
-    }
+    await checkMqttConnection();
   }
 
   Future<void> checkMqttConnection() async {
     isLoading.value = true;
-    try {
-      final connectionStatus = await connect();
-      if (connectionStatus == 0) {
-        mqttConnectionStatus.value = true;
-      }
-      isLoading.value = false;
-    } catch (e) {
+    final connectionStatus = await connect();
+    if (connectionStatus == 1) {
+      mqttConnectionStatus.value = true;
+    } else {
       mqttConnectionStatus.value = false;
-      isLoading.value = false;
-      e.toString();
     }
+    isLoading.value = false;
   }
 }

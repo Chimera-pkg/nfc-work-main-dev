@@ -64,11 +64,10 @@ class HomePage extends StatelessWidget {
                     title: "Machiato",
                     subtitle: "SAR 30.00",
                     onTap: () {
-                      controller.checkMqttConnection();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => WebViewScreen()),
+                            builder: (context) => const WebViewScreen()),
                       );
                     }),
                 customHomeCard(
