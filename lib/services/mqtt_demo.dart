@@ -15,8 +15,10 @@ String clientId = 'flutter_client1263';
 String username = 'bdihabyp';
 String password = 'zFv3EzhKhjme';
 const deviceID = 'AVA-B81FB608';
+// const deviceID = 'ABC-B81FB608';
 const String pingTopic = '/PING/$deviceID';
 const responseTopic = '/RESPONSE/$deviceID';
+bool deviceCheck = false;
 
 final client = MqttServerClient.withPort('wss://$broker', clientId, port);
 
@@ -50,10 +52,15 @@ Future<int> connect() async {
 
   if (client.connectionStatus!.state == MqttConnectionState.connected) {
     log('Client connected');
-    await subscribeToTopics();
+    // await subscribeToTopics();
     log('PING....');
     await sendPing();
-    return 1;
+    if (deviceCheck == true) {
+      log("message 1");
+      return 1;
+    } else {
+      return 0;
+    }
   } else {
     log('Client connection failed - disconnecting, status is ${client.connectionStatus}');
     client.disconnect();
@@ -61,7 +68,8 @@ Future<int> connect() async {
   }
 }
 
-Future<void> subscribeToTopics() async {
+Future<int> subscribeToTopics() async {
+  int status = 0;
   client.onSubscribed = (String topic) {
     log('Subscribed to $topic');
   };
@@ -84,10 +92,12 @@ Future<void> subscribeToTopics() async {
       log('Ping received from device');
       client.publishMessage(responseTopic, MqttQos.atLeastOnce,
           MqttClientPayloadBuilder().addString('connected').payload!);
+      status = 1;
     } else if (c[0].topic == responseTopic) {
       log('Response received: $message');
     }
   });
+  return status;
 }
 
 void onDisconnected() {
@@ -166,6 +176,9 @@ Future<void> sendPing() async {
 
     if (c[0].topic == responseTopic) {
       log('Pong response received from topic $responseTopic: $payload');
+      if (payload == "Data Kekirim Pada Flutter") {
+        deviceCheck = true;
+      }
     }
   });
 }
