@@ -14,7 +14,7 @@ int port = 35489;
 String clientId = 'flutter_client1263';
 String username = 'bdihabyp';
 String password = 'zFv3EzhKhjme';
-const deviceID = 'AVA-B81FB608'; // Replace with the actual device ID
+const deviceID = 'AVA-B81FB608';
 const String pingTopic = '/PING/$deviceID';
 const responseTopic = '/RESPONSE/$deviceID';
 

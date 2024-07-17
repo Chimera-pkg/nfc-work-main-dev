@@ -15,12 +15,28 @@ class SuccessController extends GetxController {
 
   Future<void> checkMqttConnection() async {
     isLoading.value = true;
-    final connectionStatus = await connect();
-    if (connectionStatus == 1) {
-      mqttConnectionStatus.value = true;
-    } else {
+
+    const Duration retryInterval = Duration(seconds: 1);
+    const int retryAttempts = 10;
+
+    bool connected = false;
+
+    for (int i = 0; i < retryAttempts; i++) {
+      final reconnectStatus = await connect();
+
+      if (reconnectStatus == 1) {
+        mqttConnectionStatus.value = true;
+        connected = true;
+        break;
+      }
+
+      await Future.delayed(retryInterval);
+    }
+
+    if (!connected) {
       mqttConnectionStatus.value = false;
     }
+
     isLoading.value = false;
   }
 }
