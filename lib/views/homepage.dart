@@ -1,13 +1,16 @@
 import 'package:demo_nfc/config/colors.dart';
 import 'package:demo_nfc/config/images.dart';
+import 'package:demo_nfc/controller/controller_home.dart';
 import 'package:demo_nfc/nearpay_services/nearpay_services.dart';
 import 'package:demo_nfc/widgets/card_home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:demo_nfc/views/success_screen.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+  final controller = Get.find<HomeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +67,7 @@ class HomePage extends StatelessWidget {
                     title: "Machiato",
                     subtitle: "SAR 30.00",
                     onTap: () {
+                      controller.checkMqttConnection();
                       Navigator.push(
                         context,
                         MaterialPageRoute(

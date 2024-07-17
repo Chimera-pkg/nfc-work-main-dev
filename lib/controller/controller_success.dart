@@ -1,16 +1,19 @@
 import 'dart:async';
+import 'package:demo_nfc/controller/controller_home.dart';
 import 'package:demo_nfc/services/mqtt_demo.dart';
 import 'package:get/get.dart';
 
 class SuccessController extends GetxController {
-  final isLoading = false.obs;
-  final mqttConnectionStatus = false.obs;
+  // final mqttConnectionStatus = false.obs;
+  get mqttConnectionStatus => Get.find<HomeController>().mqttConnectionStatus;
+  get isLoading => Get.find<HomeController>().isLoading;
+
   final internetConnectionStatus = false.obs;
 
   @override
   void onInit() async {
     super.onInit();
-    await checkMqttConnection();
+    // await checkMqttConnection();
   }
 
   Future<void> checkMqttConnection() async {

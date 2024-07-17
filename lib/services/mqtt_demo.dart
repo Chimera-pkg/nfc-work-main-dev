@@ -23,7 +23,7 @@ bool deviceCheck = false;
 final client = MqttServerClient.withPort('wss://$broker', clientId, port);
 
 Future<int> connect() async {
-  deviceCheck = false;
+  // deviceCheck = false;
   client.logging(on: true);
   client.useWebSocket = true;
   client.keepAlivePeriod = 60;
@@ -56,6 +56,7 @@ Future<int> connect() async {
     // await subscribeToTopics();
     log('PING....');
     await sendPing();
+    log(deviceCheck.toString());
     if (deviceCheck == true) {
       log("message 1");
       return 1;

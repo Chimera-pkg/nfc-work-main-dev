@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:demo_nfc/services/mqtt_demo.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
@@ -25,5 +26,33 @@ class HomeController extends GetxController {
     } else {
       internetConnectionStatus.value = false;
     }
+  }
+
+  Future<void> checkMqttConnection() async {
+    deviceCheck = false;
+    isLoading.value = true;
+
+    const Duration retryInterval = Duration(seconds: 1);
+    const int retryAttempts = 10;
+
+    bool connected = false;
+
+    for (int i = 0; i < retryAttempts; i++) {
+      final reconnectStatus = await connect();
+
+      if (reconnectStatus == 1) {
+        mqttConnectionStatus.value = true;
+        connected = true;
+        break;
+      }
+
+      await Future.delayed(retryInterval);
+    }
+
+    if (!connected) {
+      mqttConnectionStatus.value = false;
+    }
+
+    isLoading.value = false;
   }
 }
