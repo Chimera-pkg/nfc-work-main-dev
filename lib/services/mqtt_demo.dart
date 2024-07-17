@@ -23,6 +23,7 @@ bool deviceCheck = false;
 final client = MqttServerClient.withPort('wss://$broker', clientId, port);
 
 Future<int> connect() async {
+  deviceCheck = false;
   client.logging(on: true);
   client.useWebSocket = true;
   client.keepAlivePeriod = 60;
