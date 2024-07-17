@@ -21,15 +21,11 @@ const responseTopic = '/RESPONSE/$deviceID';
 final client = MqttServerClient.withPort('wss://$broker', clientId, port);
 
 Future<int> connect() async {
-  // client = MqttServerClient.withPort('$wsScheme$broker', clientId, port);
   client.logging(on: true);
-  client.useWebSocket = true; // Enable WebSocket
-  client.keepAlivePeriod = 60; // Set the keep-alive period
+  client.useWebSocket = true;
+  client.keepAlivePeriod = 60;
   client.onConnected = onConnected;
   client.onDisconnected = onDisconnected;
-  // client.onSubscribed = onSubscribed;
-  // client.onUnsubscribed = onUnsubscribed;
-  // client.onSubscribeFail = onSubscribeFail;
   client.pongCallback = pong;
 
   final connMessage = MqttConnectMessage()
@@ -45,11 +41,11 @@ Future<int> connect() async {
   } on NoConnectionException catch (e) {
     log('Client exception - $e');
     client.disconnect();
-    return 1; // Ensure to return an error code or handle as needed
+    return 0;
   } on SocketException catch (e) {
     log('Socket exception - $e');
     client.disconnect();
-    return 1; // Ensure to return an error code or handle as needed
+    return 0;
   }
 
   if (client.connectionStatus!.state == MqttConnectionState.connected) {
@@ -63,51 +59,9 @@ Future<int> connect() async {
     client.disconnect();
     return 0;
   }
-
-  // client.logging(on: true);
-  // client.keepAlivePeriod = 60;
-  // client.onDisconnected = onDisconnected;
-  // client.onConnected = onConnected;
-  // client.pongCallback = pong;
-  // client.setProtocolV311();
-
-  // final connMess = MqttConnectMessage()
-  //     .withClientIdentifier('dart_client')
-  //     .withWillTopic('willtopic')
-  //     .withWillMessage('My Will message')
-  //     .startClean()
-  //     .withWillQos(MqttQos.atLeastOnce)
-  //     .authenticateAs(
-  //         'bdihabyp', 'zFv3EzhKhjme'); // Add your username and password here
-  // log('Client connecting....');
-  // client.connectionMessage = connMess;
-
-  // try {
-  //   await client.connect();
-  // } on NoConnectionException catch (e) {
-  //   log('Client exception - $e');
-  //   client.disconnect();
-  //   return 1; // Ensure to return an error code or handle as needed
-  // } on SocketException catch (e) {
-  //   log('Socket exception - $e');
-  //   client.disconnect();
-  //   return 1; // Ensure to return an error code or handle as needed
-  // }
-
-  // if (client.connectionStatus!.state == MqttConnectionState.connected) {
-  //   log('Client connected');
-  //   subscribeToTopics();
-  //   return 0;
-  // } else {
-  //   log(
-  //       'Client connection failed - disconnecting, status is ${client.connectionStatus}');
-  //   client.disconnect();
-  //   return 1;
-  // }
 }
 
 Future<void> subscribeToTopics() async {
-  // Define the subscription status callback
   client.onSubscribed = (String topic) {
     log('Subscribed to $topic');
   };
@@ -116,11 +70,9 @@ Future<void> subscribeToTopics() async {
     log('Failed to subscribe to $topic');
   };
 
-  // Subscribe to topics
   client.subscribe(pingTopic, MqttQos.atLeastOnce);
   client.subscribe(responseTopic, MqttQos.atLeastOnce);
 
-  // Listen for incoming messages
   client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
     final recMess = c![0].payload as MqttPublishMessage;
     final message =
@@ -137,31 +89,6 @@ Future<void> subscribeToTopics() async {
     }
   });
 }
-
-// void subscribeToTopics() {
-//   final deviceID = 'AVA-B81FB608'; // Replace with the actual device ID
-//   final pingTopic = '/PING/$deviceID';
-//   final responseTopic = '/RESPONSE/$deviceID';
-
-//   client.subscribe(pingTopic, MqttQos.atLeastOnce);
-//   client.subscribe(responseTopic, MqttQos.atLeastOnce);
-
-//   client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
-//     final recMess = c![0].payload as MqttPublishMessage;
-//     final message =
-//         MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-
-//     log('Received message: $message from topic: ${c[0].topic}');
-
-//     if (c[0].topic == pingTopic) {
-//       log('Ping received from device');
-//       client.publishMessage(responseTopic, MqttQos.atLeastOnce,
-//           MqttClientPayloadBuilder().addString('connected').payload!);
-//     } else if (c[0].topic == responseTopic) {
-//       log('Response received: $message');
-//     }
-//   });
-// }
 
 void onDisconnected() {
   log('OnDisconnected client callback - Client disconnection');
